@@ -1,0 +1,69 @@
+{% extends 'goals/base.html' %}
+
+{% block title %}Categories - Goal Tracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-0">Categories</h1>
+        <p class="text-muted">Organize your goals by categories</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'goal_list' %}" class="btn btn-outline-primary">
+            <i class="bi bi-house"></i> Home
+        </a>
+        <a href="{% url 'category_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Add New Category
+        </a>
+    </div>
+</div>
+
+{% if categories %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for category in categories %}
+            <div class="col">
+                <div class="card category-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="category-icon" style="background-color: {{ category.color }}; color: white;">
+                                    <i class="bi bi-folder"></i>
+                                </div>
+                                <h5 class="card-title mb-0">{{ category.name }}</h5>
+                            </div>
+                            <div class="category-actions btn-group">
+                                <a href="{% url 'category_update' category.pk %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'category_delete' category.pk %}" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-bullseye"></i>
+                            {{ category.goals.count }} goal{{ category.goals.count|pluralize }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-folder" style="font-size: 4rem; color: var(--primary-color);"></i>
+        </div>
+        <h3 class="text-muted">No categories yet</h3>
+        <p class="text-muted">Create categories to organize your goals!</p>
+        <div class="d-flex justify-content-center gap-2">
+            <a href="{% url 'goal_list' %}" class="btn btn-outline-primary mt-3">
+                <i class="bi bi-house"></i> Back to Home
+            </a>
+            <a href="{% url 'category_create' %}" class="btn btn-primary mt-3">
+                <i class="bi bi-plus-lg"></i> Create Your First Category
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %} 

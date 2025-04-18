@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Personal Goal Tracker{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2d3436;
+            --secondary-color: #636e72;
+            --accent-color: #e17055;
+            --success-color: #00b894;
+            --warning-color: #fdcb6e;
+            --danger-color: #d63031;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8f9fa;
+            --bg-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            --card-bg: white;
+            --text-color: #2d3436;
+            --text-muted: #636e72;
+            --border-color: #dfe6e9;
+            --shadow-color: rgba(0,0,0,0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #18191a;
+            --bg-gradient: linear-gradient(135deg, #18191a 0%, #242526 100%);
+            --card-bg: #242526;
+            --text-color: #f5f6f7;
+            --text-muted: #b0b3b8;
+            --border-color: #3e4042;
+            --shadow-color: rgba(0,0,0,0.2);
+            --btn-hover-bg: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        .navbar {
+            background: var(--card-bg) !important;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-color) !important;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            transition: all 0.3s ease;
+            background-color: var(--card-bg);
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        [data-theme="dark"] .btn-outline-primary {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        [data-theme="dark"] .btn-outline-primary:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .btn-outline-danger {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-outline-danger:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-outline-success {
+            border-color: var(--success-color);
+            color: var(--success-color);
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-outline-success:hover {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .goal-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .status-badge {
+            padding: 0.4em 0.8em;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(45, 52, 54, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .container {
+            padding: 2rem 1rem;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-color);
+            font-weight: 700;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        .btn-group .btn {
+            border-radius: 8px;
+            margin: 0 0.25rem;
+        }
+
+        .nav-link {
+            color: var(--text-color) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--btn-hover-bg);
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .nav-link {
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .nav-link:hover {
+            background: var(--btn-hover-bg);
+            color: var(--accent-color) !important;
+        }
+
+        .card-title {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .theme-switcher {
+            position: relative;
+            display: inline-block;
+        }
+
+        .theme-switcher .dropdown-menu {
+            min-width: 200px;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .theme-switcher .dropdown-item {
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-switcher .dropdown-item:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .theme-switcher .dropdown-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .theme-switcher .dropdown-item i {
+            font-size: 1.2rem;
+        }
+
+        .theme-switcher .btn {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-switcher .btn:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--text-color);
+        }
+
+        .theme-switcher .btn i {
+            font-size: 1.2rem;
+        }
+
+        .form-select {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .form-select:focus {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .navbar-toggler {
+            border: none;
+            color: var(--text-color);
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(45, 52, 54, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        [data-theme="dark"] .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(245, 246, 247, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        .badge {
+            font-weight: 500;
+        }
+
+        .bg-success {
+            background-color: var(--success-color) !important;
+        }
+
+        .bg-warning {
+            background-color: var(--warning-color) !important;
+            color: var(--primary-color);
+        }
+
+        .bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #b71c1c;
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        [data-theme="dark"] .btn-outline-secondary {
+            border-color: var(--text-muted);
+            color: var(--text-muted);
+        }
+
+        [data-theme="dark"] .btn-outline-secondary:hover {
+            background: var(--text-muted);
+            color: var(--card-bg);
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .alert-success {
+            background-color: rgba(0, 184, 148, 0.1);
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(214, 48, 49, 0.1);
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .alert-warning {
+            background-color: rgba(253, 203, 110, 0.1);
+            color: #e17055;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .alert-info {
+            background-color: rgba(45, 52, 54, 0.1);
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        /* Notification styles */
+        .notification-dropdown {
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .notification-item {
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+
+        .notification-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] .notification-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .mark-read-btn {
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+
+        .mark-read-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .form-control-color {
+            width: 100% !important;
+            height: 40px !important;
+            padding: 0 !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 8px !important;
+            background-color: var(--card-bg) !important;
+            cursor: pointer;
+        }
+
+        [data-theme="dark"] .form-control-color {
+            border-color: var(--text-muted) !important;
+        }
+
+        .form-control-color::-webkit-color-swatch-wrapper {
+            padding: 0 !important;
+        }
+
+        .form-control-color::-webkit-color-swatch {
+            border: none !important;
+            border-radius: 6px !important;
+        }
+
+        .form-control-color::-moz-color-swatch {
+            border: none !important;
+            border-radius: 6px !important;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .category-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+            border-color: var(--accent-color);
+        }
+
+        [data-theme="dark"] .category-card {
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .category-card:hover {
+            border-color: var(--accent-color);
+            background-color: rgba(225, 112, 85, 0.1);
+        }
+
+        .category-card .btn-outline-primary {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .category-card .btn-outline-primary:hover {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .category-card .btn-outline-danger {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .category-card .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+
+        [data-theme="dark"] .category-card .btn-outline-primary,
+        [data-theme="dark"] .category-card .btn-outline-danger {
+            border-width: 2px;
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover .category-icon {
+            transform: scale(1.1);
+        }
+
+        .category-actions {
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover .category-actions {
+            opacity: 1;
+        }
+
+        [data-theme="dark"] .category-actions .btn {
+            background-color: var(--card-bg);
+        }
+
+        [data-theme="dark"] .category-actions .btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        [data-theme="dark"] .category-actions .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+        }
+
+        /* Category and Goal Button Styles */
+        .btn-group .btn-outline-primary {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .btn-group .btn-outline-primary:hover,
+        .btn-group .btn-outline-primary:active,
+        .btn-group .btn-outline-primary.active {
+            background-color: var(--accent-color) !important;
+            color: white !important;
+            border-color: var(--accent-color) !important;
+        }
+
+        [data-theme="dark"] .btn-group .btn-outline-primary {
+            border-width: 2px;
+        }
+
+        .goal-card .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+
+        .goal-card .btn-group .btn {
+            flex: 1;
+            padding: 0.625rem 1rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            border-width: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .goal-card .btn-group .btn i {
+            font-size: 1rem;
+        }
+
+        [data-theme="dark"] .goal-card .btn-group .btn {
+            border-width: 2px;
+            background-color: var(--card-bg);
+        }
+
+        .goal-card .btn-group .btn-outline-primary {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .goal-card .btn-group .btn-outline-primary:hover {
+            background-color: var(--accent-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .goal-card .btn-group .btn-outline-danger {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .goal-card .btn-group .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .goal-card .btn-group .btn-outline-success {
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .goal-card .btn-group .btn-outline-success:hover {
+            background-color: var(--success-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Remove Bootstrap's default button group styling */
+        .goal-card .btn-group {
+            box-shadow: none !important;
+        }
+
+        .goal-card .btn-group .btn {
+            border-radius: 8px !important;
+            position: relative;
+            margin: 0 !important;
+        }
+
+        .goal-card .btn-group .btn:not(:last-child) {
+            margin-right: 0 !important;
+        }
+
+        .goal-card .btn-group .btn:focus {
+            z-index: 1;
+        }
+
+        /* Status and Category Badge Spacing */
+        .status-badge {
+            margin-left: 0.5rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .category-badge {
+            margin-bottom: 1rem;
+            padding: 0.4rem 0.8rem;
+            display: inline-block;
+        }
+
+        /* Card Content Spacing */
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            margin-bottom: 1rem;
+        }
+
+        .card-text {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Navigation and Filter Spacing */
+        .nav-item {
+            margin: 0 0.25rem;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+        }
+
+        /* Category Filter Button Group */
+        .filter-btn-group {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .filter-btn-group .btn {
+            margin: 0;
+            padding: 0.5rem 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'goal_list' %}">
+                <i class="bi bi-bullseye"></i> Goal Tracker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item theme-switcher dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="themeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-palette"></i> Theme
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
+                            <li><a class="dropdown-item active" href="#" data-theme="light"><i class="bi bi-sun"></i> Light</a></li>
+                            <li><a class="dropdown-item" href="#" data-theme="dark"><i class="bi bi-moon"></i> Dark</a></li>
+                            <li><a class="dropdown-item" href="#" data-theme="system"><i class="bi bi-display"></i> System Default</a></li>
+                        </ul>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'goal_create' %}">
+                                <i class="bi bi-plus-circle"></i> New Goal
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'category_list' %}">
+                                <i class="bi bi-folder"></i> Categories
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'streak_board' %}">
+                                <i class="fas fa-fire me-1"></i>Streak Board
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link position-relative dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-bell"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-count" style="display: none;">
+                                    0
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationsDropdown" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                                <li><h6 class="dropdown-header">Notifications</h6></li>
+                                <div id="notifications-list" class="px-2">
+                                    <!-- Notifications will be loaded here -->
+                                </div>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-center" href="#" id="mark-all-read">Mark all as read</a></li>
+                                <li><a class="dropdown-item text-center" href="#" id="test-notification">Test Notification</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">
+                                <i class="bi bi-person-plus"></i> Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    <i class="bi bi-info-circle"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="notification-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="bi bi-bell-fill me-2"></i>
+                <strong class="me-auto" id="toast-title"></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toast-message"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme Switcher
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeDropdownItems = document.querySelectorAll('.theme-switcher .dropdown-item');
+            const htmlElement = document.documentElement;
+            
+            // Function to get system theme preference
+            function getSystemTheme() {
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            // Function to set theme
+            function setTheme(theme) {
+                if (theme === 'system') {
+                    theme = getSystemTheme();
+                }
+                htmlElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme === getSystemTheme() ? 'system' : theme);
+                
+                // Update active state in dropdown
+                themeDropdownItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('data-theme') === (theme === getSystemTheme() ? 'system' : theme)) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+
+            // Load saved theme or use system default
+            const savedTheme = localStorage.getItem('theme') || 'system';
+            setTheme(savedTheme);
+
+            // Listen for theme changes
+            themeDropdownItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const theme = e.target.getAttribute('data-theme');
+                    setTheme(theme);
+                });
+            });
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                if (localStorage.getItem('theme') === 'system') {
+                    setTheme('system');
+                }
+            });
+        });
+
+        // Notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationCount = document.getElementById('notification-count');
+            const notificationToast = document.getElementById('notification-toast');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            const notificationsList = document.getElementById('notifications-list');
+            const markAllReadBtn = document.getElementById('mark-all-read');
+            const testNotificationBtn = document.getElementById('test-notification');
+            const toast = new bootstrap.Toast(notificationToast, {
+                autohide: true,
+                delay: 5000
+            });
+
+            function formatTimestamp(timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleString();
+            }
+
+            function createNotificationElement(notification) {
+                const div = document.createElement('div');
+                div.className = 'notification-item p-2 border-bottom';
+                div.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">${notification.title}</h6>
+                            <p class="mb-1 small text-muted">${notification.message}</p>
+                            <small class="text-muted">${formatTimestamp(notification.created_at)}</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mark-read-btn" data-id="${notification.id}">
+                            <i class="bi bi-check"></i>
+                        </button>
+                    </div>
+                `;
+                return div;
+            }
+
+            function updateNotificationCount() {
+                fetch('/notifications/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const count = data.notifications.length;
+                        notificationCount.textContent = count;
+                        notificationCount.style.display = count > 0 ? 'block' : 'none';
+                        
+                        // Update dropdown list
+                        notificationsList.innerHTML = '';
+                        if (count === 0) {
+                            notificationsList.innerHTML = '<div class="text-center py-3 text-muted">No notifications</div>';
+                        } else {
+                            data.notifications.forEach(notification => {
+                                notificationsList.appendChild(createNotificationElement(notification));
+                            });
+                        }
+                    });
+            }
+
+            function showNotification(title, message) {
+                toastTitle.textContent = title;
+                toastMessage.textContent = message;
+                toast.show();
+                updateNotificationCount();
+            }
+
+            function markAsRead(notificationId) {
+                fetch(`/notifications/${notificationId}/read/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateNotificationCount();
+                    }
+                });
+            }
+
+            // Event delegation for mark as read buttons
+            notificationsList.addEventListener('click', function(e) {
+                if (e.target.closest('.mark-read-btn')) {
+                    const button = e.target.closest('.mark-read-btn');
+                    const notificationId = button.dataset.id;
+                    markAsRead(notificationId);
+                }
+            });
+
+            // Mark all as read
+            markAllReadBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetch('/notifications/mark-all-read/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateNotificationCount();
+                    }
+                });
+            });
+
+            // Test notification
+            testNotificationBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetch('/notifications/test/')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            updateNotificationCount();
+                        }
+                    });
+            });
+
+            // Check for new notifications every 30 seconds
+            setInterval(() => {
+                fetch('/notifications/')
+                    .then(response => response.json())
+                    .then(data => {
+                        data.notifications.forEach(notification => {
+                            showNotification(notification.title, notification.message);
+                        });
+                    });
+            }, 30000);
+
+            // Initial notification count
+            updateNotificationCount();
+        });
+    </script>
+</body>
+</html> 

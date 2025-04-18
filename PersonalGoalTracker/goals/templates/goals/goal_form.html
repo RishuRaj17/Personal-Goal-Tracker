@@ -1,0 +1,163 @@
+{% extends 'goals/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Update{% else %}Create{% endif %} Goal - Goal Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0">
+                <div class="card-body p-4 p-lg-5">
+                    <div class="text-center mb-4">
+                        <div class="form-icon mb-3">
+                            <i class="bi bi-bullseye"></i>
+                        </div>
+                        <h2 class="h3 mb-0">{% if form.instance.pk %}Update{% else %}Create{% endif %} Goal</h2>
+                        <p class="text-muted">Set your target and track your progress</p>
+                    </div>
+
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                            <div class="mb-4">
+                                <label for="{{ field.id_for_label }}" class="form-label d-flex align-items-center gap-2">
+                                    <i class="bi {% if field.name == 'title' %}bi-pencil-square
+                                              {% elif field.name == 'description' %}bi-card-text
+                                              {% elif field.name == 'category' %}bi-tag
+                                              {% elif field.name == 'priority' %}bi-flag
+                                              {% elif field.name == 'target_date' %}bi-calendar-check
+                                              {% elif field.name == 'reminder_date' %}bi-bell
+                                              {% elif field.name == 'parent_goal' %}bi-diagram-2
+                                              {% else %}bi-info-circle{% endif %}"></i>
+                                    {{ field.label }}
+                                </label>
+                                
+                                {% if field.name == 'description' %}
+                                    <textarea class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" rows="4" 
+                                              placeholder="Describe your goal in detail...">{{ field.value|default:'' }}</textarea>
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
+                                
+                                {% if field.help_text %}
+                                    <div class="form-text text-muted">{{ field.help_text }}</div>
+                                {% endif %}
+                                
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in field.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <a href="{% url 'goal_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> {% if form.instance.pk %}Update{% else %}Create{% endif %} Goal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 2.5rem;
+    box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.2);
+}
+
+.form-control {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.1);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.form-label i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+}
+
+.btn-outline-secondary {
+    border: 1px solid var(--border-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .form-control {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .form-control:focus {
+    background-color: var(--bg-secondary);
+    border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .form-text {
+    color: var(--text-muted);
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+</style>
+{% endblock %} 
